@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 
 from Models.SDF import display_SDF
-# from Models.Neva import Display_NeVA_22B
+from Models.RunwayML_SDF import display_RunwayML_SDF
 # # from Models.kosmos2 import Display_Kosmos2
 # from Models.Palm2 import Display_Palm2
 # from Models.Mistral import Display_Mistral_7B
@@ -21,16 +21,16 @@ st.set_page_config(
 with st.sidebar:
     # Create the options menu
     selected = option_menu(menu_title="Media-Gen Models",
-                           options=["Stable Diff", "Model2","Model3","Model4","Model5"],
+                           options=["Stable Diffusion 1.0", "Stable Diffusion 1.5","Model3","Model4","Model5"],
                            icons=["box", "box", "box","box","box"],
                            menu_icon="boxes",
                            default_index=0
                            )
     
-if selected == "Stable Diff":
+if selected == "Stable Diffusion 1.0":
     display_SDF(HUGGINGFACE_API_KEY)
-# elif selected == "NeVA-22B":
-#     Display_NeVA_22B()
+elif selected == "Stable Diffusion 1.5":
+    display_RunwayML_SDF(HUGGINGFACE_API_KEY)
 # # elif selected == "Kosmos2":
 # #     Display_Kosmos2()
 # elif selected == "Palm-2":
