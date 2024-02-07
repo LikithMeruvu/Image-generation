@@ -26,14 +26,27 @@ def display_RunwayML_SDF(token):
     st.markdown("<p style='text-align:center;'>You can download the image with right click > save image</p>", unsafe_allow_html=True)
 
     with st.sidebar:
-        st.title("Parameters Tuning (SDF)")
-        st.session_state.GS_val = st.slider("Select Guidencescale", key="slider1", min_value=0.1, max_value=10.0, value=7.5, step=0.1, help="how much your prompt effect your image")
-        if st.session_state.GS_val > 9.9:
-            st.session_state.GS_val = 10
-        st.write('Guidence scale:', st.session_state.GS_val)
+        st.title("Parameters Tuning")
+        st.session_state.val2 = st.slider("Select Guidencescale", key="slider1", min_value=0.1, max_value=10.0, value=7.5, step=0.1, help="how much your prompt effect your image")
+        if st.session_state.val2 > 9.9:
+            st.session_state.val2 = 10
+        st.write('Guidence scale:', st.session_state.val2)
 
         st.session_state.inference_steps_val = st.slider("Select Inference Steps", key="slider2", min_value=50, max_value=200, value=50, step=1, help="Number of inference steps for image generation")
         st.write('Inference Steps:', st.session_state.inference_steps_val)
+
+        st.subheader("Usage Manual (must Read !)")
+        st.markdown("""<ul>
+                        <li>Stable diffusion v-1.5</l1>
+                        <li>It convert your text prompts into image</l1>
+                        <li>When your prompts contains any hateful or malicious text it wont give you image, instead it might give you error or a blank image so dont do it !</l1>
+                        <li>Sometimes it migth give you error even when you give legit prompt in that case try changing prompt a little or clear cache data from above settings</l1>
+                        <li>There is only 8000 char input allowed in a single prompt so write wisely</li>
+                        <li>when your chat history is long it might get Stuck or takes more time to render page (will fix in future), If you encounter this start another session by refreshing page</li>
+                        </ul>
+                    
+                    """,unsafe_allow_html=True)
+        st.success("You are Good to go !")
 
     if "messages_run" not in st.session_state:
         st.session_state["messages_run"] = [
@@ -53,9 +66,8 @@ def display_RunwayML_SDF(token):
         st.session_state.messages_run.append({"role": "user", "content": prompt})
         st.chat_message("user").write(prompt)
 
-        # Query Stable Diffusion
-        headers = {"Authorization": f"Bearer {token}"}
-        image_bytes = SDF_Runway_ML(token, prompt, st.session_state.GS_val, st.session_state.inference_steps_val)
+
+        image_bytes = SDF_Runway_ML(token, prompt, st.session_state.val2, st.session_state.inference_steps_val)
 
         # Return Image
         image = Image.open(io.BytesIO(image_bytes))
