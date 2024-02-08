@@ -10,8 +10,8 @@ def SDF_v2(token, inputs, guide_scale, inference_steps):
 
     payload = {
         "inputs": inputs,
-        "guide_scale": guide_scale,
-        "inference_steps": inference_steps,
+        "guidence_scale": guide_scale,
+        "num_inference_steps": inference_steps,
     }
     
     response = requests.post(API_URL, headers=headers, json=payload)
@@ -30,8 +30,8 @@ def display_SDFv2(token):
             st.session_state.guide_scale_val3 = 10
         st.write('Guidence scale:', st.session_state.guide_scale_val3)
 
-        st.session_state.inference_steps_val = st.slider("Select Inference Steps", key="slider2", min_value=50, max_value=200, value=100, step=1, help="Number of inference steps for image generation")
-        st.write('Inference Steps:', st.session_state.inference_steps_val)
+        st.session_state.inference_steps_vals = st.slider("Select Inference Steps", key="slider2", min_value=50, max_value=200, value=100, step=1, help="Number of inference steps for image generation")
+        st.write('Inference Steps:', st.session_state.inference_steps_vals)
 
         st.subheader("Usage Manual (must Read !)")
         st.markdown("""<ul>
@@ -60,17 +60,22 @@ def display_SDFv2(token):
     prompt = st.chat_input("Enter your prompt:")
 
     if prompt:
-        # Input prompt
+    # Input prompt
         st.session_state.messages_sdfv2.append({"role": "user", "content": prompt})
         st.chat_message("user").write(prompt)
 
-        image_bytes = SDF_v2(token, prompt, st.session_state.guide_scale_val3, st.session_state.inference_steps_val)
+        try:
+        # Call the SDF_Runway_ML function with updated parameters
+            image_bytes = SDF_v2(token, prompt, st.session_state.guide_scale_val3, st.session_state.inference_steps_vals)
 
-        # Return Image
-        image = Image.open(io.BytesIO(image_bytes))
-        msg = f'Here is your image related to "{prompt}"'
+        # Open the image using PIL
+            image = Image.open(io.BytesIO(image_bytes))
+            msg = f'Here is your image related to "{prompt}"'
 
-        # Show Result
-        st.session_state.messages_sdfv2.append({"role": "assistant", "content": msg, "prompt": prompt, "image": image})
-        st.chat_message("assistant").write(msg)
-        st.chat_message("assistant").image(image, caption=prompt, use_column_width=True)
+        # Show the result
+            st.session_state.messages_sdfv2.append({"role": "assistant", "content": msg, "prompt": prompt, "image": image})
+            st.chat_message("assistant").write(msg)
+            st.chat_message("assistant").image(image, caption=prompt, use_column_width=True)
+    
+        except Exception as e:
+            st.chat_message("assistant").write("Our Server is at Max Capacity Try using Different Model !")

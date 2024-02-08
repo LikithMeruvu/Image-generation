@@ -11,8 +11,8 @@ def SDF_Runway_ML(token,inputs, guide_scale, inference_steps):
 
     payload = {
         "inputs": inputs,
-        "guide_scale": guide_scale,
-        "inference_steps": inference_steps
+        "guidence_scale": guide_scale,
+        "num_inference_steps": inference_steps
     }
     
     response = requests.post(API_URL, headers=headers, json=payload)
@@ -62,18 +62,22 @@ def display_RunwayML_SDF(token):
     prompt = st.chat_input("Enter your prompt:")
 
     if prompt:
-        # Input prompt
+    # Input prompt
         st.session_state.messages_run.append({"role": "user", "content": prompt})
         st.chat_message("user").write(prompt)
 
+        try:
+        # Call the SDF_Runway_ML function with updated parameters
+            image_bytes = SDF_Runway_ML(token, prompt, st.session_state.val2, st.session_state.inference_steps_val)
 
-        image_bytes = SDF_Runway_ML(token, prompt, st.session_state.val2, st.session_state.inference_steps_val)
+        # Open the image using PIL
+            image = Image.open(io.BytesIO(image_bytes))
+            msg = f'Here is your image related to "{prompt}"'
 
-        # Return Image
-        image = Image.open(io.BytesIO(image_bytes))
-        msg = f'Here is your image related to "{prompt}"'
-
-        # Show Result
-        st.session_state.messages_run.append({"role": "assistant", "content": msg, "prompt": prompt, "image": image})
-        st.chat_message("assistant").write(msg)
-        st.chat_message("assistant").image(image, caption=prompt, use_column_width=True)
+        # Show the result
+            st.session_state.messages_run.append({"role": "assistant", "content": msg, "prompt": prompt, "image": image})
+            st.chat_message("assistant").write(msg)
+            st.chat_message("assistant").image(image, caption=prompt, use_column_width=True)
+    
+        except Exception as e:
+            st.chat_message("assistant").write("Our Server is at Max Capacity Try using Different Model !")
