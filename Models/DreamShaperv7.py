@@ -5,14 +5,15 @@ from PIL import Image
 
 
 @st.cache_data
-def DreamShaper_v7(token,inputs, guide_scale, inference_steps):
+def DreamShaper_v7(token,inputs, guide_scale, inference_steps,Negative):
     API_URL = "https://api-inference.huggingface.co/models/SimianLuo/LCM_Dreamshaper_v7"
     headers = {"Authorization": f"Bearer {token}"}
 
     payload = {
         "inputs": inputs,
         "guidence_scale": guide_scale,
-        "num_inference_steps": inference_steps
+        "num_inference_steps": inference_steps,
+        "negative_prompt":Negative
     }
     
     response = requests.post(API_URL, headers=headers, json=payload)
@@ -34,6 +35,8 @@ def display_DreamShaper_v7(token):
 
         st.session_state.inference_steps_val2 = st.slider("Select Inference Steps", key="slider2", min_value=50, max_value=200, value=100, step=1, help="Number of inference steps for image generation")
         st.write('Inference Steps:', st.session_state.inference_steps_val2)
+
+        st.session_state.Negative3 = st.text_input("enter Negative prompt",help="Things you dont want to see in image")
 
         st.subheader("Usage Manual (must Read !)")
         st.markdown("""<ul>
@@ -68,7 +71,7 @@ def display_DreamShaper_v7(token):
 
         try:
         # Call the SDF_Runway_ML function with updated parameters
-            image_bytes = DreamShaper_v7(token, prompt, st.session_state.GS_val2, st.session_state.inference_steps_val2)
+            image_bytes = DreamShaper_v7(token, prompt, st.session_state.GS_val2, st.session_state.inference_steps_val2,st.session_state.Negative3)
 
         # Open the image using PIL
             image = Image.open(io.BytesIO(image_bytes))

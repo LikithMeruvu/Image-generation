@@ -5,14 +5,15 @@ from PIL import Image
 
 
 @st.cache_data
-def SDXL(token,inputs, guide_scale, inference_steps):
+def SDXL(token,inputs, guide_scale, inference_steps,Negative):
     API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
     headers = {"Authorization": f"Bearer {token}"}
 
     payload = {
         "inputs": inputs,
         "guidence_scale": guide_scale,
-        "num_inference_steps": inference_steps
+        "num_inference_steps": inference_steps,
+        "negative_prompt":Negative
     }
     
     response = requests.post(API_URL, headers=headers, json=payload)
@@ -21,7 +22,7 @@ def SDXL(token,inputs, guide_scale, inference_steps):
     return image_bytes
 
 def display_SDF(token):
-    st.markdown("<h1 style='text-align:center;'>Stable Diffusion v-1.0</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align:center;'>Stable Diffusion XL</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center;'>You can download the image with right click > save image</p>", unsafe_allow_html=True)
 
     with st.sidebar:
@@ -33,6 +34,8 @@ def display_SDF(token):
 
         st.session_state.inference_steps_val = st.slider("Select Inference Steps", key="slider2", min_value=50, max_value=200, value=50, step=1, help="Number of inference steps for image generation")
         st.write('Inference Steps:', st.session_state.inference_steps_val)
+
+        st.session_state.Negative = st.text_input("enter Negative prompt",help="Things you dont want to see in image")
 
         st.subheader("Usage Manual (must Read !)")
         st.markdown("""<ul>
@@ -67,7 +70,7 @@ def display_SDF(token):
 
         try:
         # Call the SDF_Runway_ML function with updated parameters
-            image_bytes = SDXL(token, prompt, st.session_state.GS_val, st.session_state.inference_steps_val)
+            image_bytes = SDXL(token, prompt, st.session_state.GS_val, st.session_state.inference_steps_val,st.session_state.Negative)
 
         # Open the image using PIL
             image = Image.open(io.BytesIO(image_bytes))

@@ -5,14 +5,15 @@ from PIL import Image
 
 
 @st.cache_data
-def Anime_df(token,inputs, guide_scale, inference_steps):
+def Anime_df(token,inputs, guide_scale, inference_steps,Negative):
     API_URL = "https://api-inference.huggingface.co/models/cagliostrolab/animagine-xl-3.0"
     headers = {"Authorization": f"Bearer {token}"}
 
     payload = {
         "inputs": inputs,
         "guidence_scale": guide_scale,
-        "num_inference_steps": inference_steps
+        "num_inference_steps": inference_steps,
+        "negative_prompt":Negative
     }
     
     response = requests.post(API_URL, headers=headers, json=payload)
@@ -34,6 +35,8 @@ def display_Anime_df(token):
 
         st.session_state.inference_steps_val3 = st.slider("Select Inference Steps", key="slider2", min_value=50, max_value=200, value=100, step=1, help="Number of inference steps for image generation")
         st.write('Inference Steps:', st.session_state.inference_steps_val3)
+
+        st.session_state.Negative4 = st.text_input("enter Negative prompt",help="Things you dont want to see in image")
 
         st.subheader("Usage Manual (must Read !)")
         st.markdown("""<ul>
@@ -68,7 +71,7 @@ def display_Anime_df(token):
 
         try:
         # Call the SDF_Runway_ML function with updated parameters
-            image_bytes = Anime_df(token, prompt, st.session_state.GS_val3, st.session_state.inference_steps_val3)
+            image_bytes = Anime_df(token, prompt, st.session_state.GS_val3, st.session_state.inference_steps_val3,st.session_state.Negative4)
 
         # Open the image using PIL
             image = Image.open(io.BytesIO(image_bytes))

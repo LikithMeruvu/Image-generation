@@ -5,24 +5,24 @@ from PIL import Image
 
 
 @st.cache_data
-def SDF_Runway_ML(token,inputs, guide_scale, inference_steps):
-    API_URL = "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5"
+def Bria_v2(token,inputs, guide_scale, inference_steps,Negative):
+    API_URL = "https://api-inference.huggingface.co/models/briaai/BRIA-2.2"
     headers = {"Authorization": f"Bearer {token}"}
 
     payload = {
         "inputs": inputs,
         "guidence_scale": guide_scale,
-        "num_inference_steps": inference_steps
+        "num_inference_steps": inference_steps,
+        "negative_prompt":Negative
     }
     
     response = requests.post(API_URL, headers=headers, json=payload)
     image_bytes = response.content
-
     return image_bytes
 
 
-def display_RunwayML_SDF(token):
-    st.markdown("<h1 style='text-align:center;'>Stable Diffusion RunwayML v-1.5</h1>", unsafe_allow_html=True)
+def display_Brea(token):
+    st.markdown("<h1 style='text-align:center;'>Brea V2</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center;'>You can download the image with right click > save image</p>", unsafe_allow_html=True)
 
     with st.sidebar:
@@ -34,6 +34,8 @@ def display_RunwayML_SDF(token):
 
         st.session_state.inference_steps_val = st.slider("Select Inference Steps", key="slider2", min_value=50, max_value=200, value=50, step=1, help="Number of inference steps for image generation")
         st.write('Inference Steps:', st.session_state.inference_steps_val)
+
+        st.session_state.Negative2 = st.text_input("enter Negative prompt",help="Things you dont want to see in image")
 
         st.subheader("Usage Manual (must Read !)")
         st.markdown("""<ul>
@@ -68,7 +70,7 @@ def display_RunwayML_SDF(token):
 
         try:
         # Call the SDF_Runway_ML function with updated parameters
-            image_bytes = SDF_Runway_ML(token, prompt, st.session_state.val2, st.session_state.inference_steps_val)
+            image_bytes = Bria_v2(token, prompt, st.session_state.val2, st.session_state.inference_steps_val,st.session_state.Negative2)
 
         # Open the image using PIL
             image = Image.open(io.BytesIO(image_bytes))

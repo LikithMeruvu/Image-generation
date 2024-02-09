@@ -4,7 +4,7 @@ import io
 from PIL import Image
 
 @st.cache_data
-def SDF_v2(token, inputs, guide_scale, inference_steps):
+def SDF_v2(token, inputs, guide_scale, inference_steps,Negative):
     API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1"
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -12,6 +12,7 @@ def SDF_v2(token, inputs, guide_scale, inference_steps):
         "inputs": inputs,
         "guidence_scale": guide_scale,
         "num_inference_steps": inference_steps,
+        "negative_prompt":Negative
     }
     
     response = requests.post(API_URL, headers=headers, json=payload)
@@ -32,6 +33,8 @@ def display_SDFv2(token):
 
         st.session_state.inference_steps_vals = st.slider("Select Inference Steps", key="slider2", min_value=50, max_value=200, value=100, step=1, help="Number of inference steps for image generation")
         st.write('Inference Steps:', st.session_state.inference_steps_vals)
+
+        st.session_state.Negative1 = st.text_input("enter Negative prompt",help="Things you dont want to see in image")
 
         st.subheader("Usage Manual (must Read !)")
         st.markdown("""<ul>
@@ -66,7 +69,7 @@ def display_SDFv2(token):
 
         try:
         # Call the SDF_Runway_ML function with updated parameters
-            image_bytes = SDF_v2(token, prompt, st.session_state.guide_scale_val3, st.session_state.inference_steps_vals)
+            image_bytes = SDF_v2(token, prompt, st.session_state.guide_scale_val3, st.session_state.inference_steps_vals,st.session_state.Negative1)
 
         # Open the image using PIL
             image = Image.open(io.BytesIO(image_bytes))
