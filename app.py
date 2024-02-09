@@ -11,9 +11,9 @@ from Models.Dall_e3 import display_Dall_e3
 
 
 load_dotenv()
-HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
-HUGGINGFACE_API_KEY1 = os.getenv("HUGGINGFACE_API_KEY1")
-OPEN_AI_API = os.getenv("OPEN_AI_API")
+HUGGINGFACE_API_KEY = st.secrets['HUGGINGFACE_API_KEY']
+HUGGINGFACE_API_KEY1 = st.secrets['HUGGINGFACE_API_KEY1']
+OPEN_AI_API = st.secrets['OPEN_AI_API']
 
 st.set_page_config(
         page_title="Generative Image",
